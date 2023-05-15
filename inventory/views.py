@@ -206,9 +206,9 @@ class StockPurchaseViewSet(viewsets.ModelViewSet):
 
 class StockViewSet(ModelViewSet):
     serializer_class= StockSerializer
-    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    pagination_class = DefaultPagination
-    search_fields = ['title']
+    # filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    # pagination_class = DefaultPagination
+    # search_fields = ['title']
     
     def get_serializer_context(self):
       stock_purchase_pk = self.kwargs['stocks_purchase_pk']
