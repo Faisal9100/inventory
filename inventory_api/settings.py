@@ -92,17 +92,14 @@ WSGI_APPLICATION = 'inventory_api.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'inventory_api',
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
-        }
-    }
+'default': {
+'ENGINE': 'django.db.backends.postgresql_psycopg2', 
+'NAME': 'inventory_api',
+'USER': 'djangoi',
+'PASSWORD': 'khan123',
+'HOST': '127.0.0.1',
+'PORT': '5432',
+}
 }
 
 
@@ -140,8 +137,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = 'static/'
-MEDIA_URL = '/media/'
+STATIC_URL = "/static/"
+STATIC_ROOT = '/home/django/static'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
