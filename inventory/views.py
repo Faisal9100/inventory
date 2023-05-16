@@ -15,7 +15,8 @@ from rest_framework.exceptions import ValidationError
 # from rest_framework.permissions import IsAuthenticated
 # Create your views here.
 
-
+def index(request):
+    return render(request, 'index.html')
 class CategorieViewSet(ModelViewSet):
     queryset = Categorie.objects.all().order_by('-id')
     serializer_class = CategorieSerializer

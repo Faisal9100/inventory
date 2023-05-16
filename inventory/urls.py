@@ -38,5 +38,6 @@ urlpatterns = [
     path('', include(account_router.urls)),
     path('', include(stock_router.urls)),
     path('', include(sale_item_router.urls)),
+    path('index/', views.index, name='index'),
     
 ]
