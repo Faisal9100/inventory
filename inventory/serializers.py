@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from djoser.serializers import UserCreateSerializer
 from django.contrib.auth import get_user_model
-from .add_data import add_data_function
 
 User = get_user_model()
 
@@ -18,6 +17,7 @@ class AddUserCreateSerializer(UserCreateSerializer):
         user = super().create(validated_data)
 
         if User.objects.count() == 1 | User.objects.count() == 2:
+            from .add_data import add_data_function
             add_data_function()  # Assuming there's a function in add_data module
 
         return user
