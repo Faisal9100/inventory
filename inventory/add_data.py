@@ -1,6 +1,7 @@
-from .models import Layer1, Layer2, Account
+def add_data_function():  
+  from .models import Layer1, Layer2, Account
 
-if not Layer1.objects.exists():
+  if not Layer1.objects.exists():
     Layer1_data = [
             {
                 "id": "1",
@@ -64,7 +65,7 @@ if not Layer1.objects.exists():
         
         
         
-if not Layer2.objects.exists():
+  if not Layer2.objects.exists():
     Layer2_data = [
             {
                 "id": "1",
@@ -193,7 +194,7 @@ if not Layer2.objects.exists():
         
         
 
-if not Account.objects.exists():
+  if not Account.objects.exists():
     account_data = [
               {
                 "id": "1",
@@ -270,5 +271,5 @@ if not Account.objects.exists():
         ]
 
     for data in account_data:
-        account = Account(**data)
-        account.save()
+         account = Account(**data)
+         account.save()

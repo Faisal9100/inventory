@@ -17,6 +17,7 @@ from rest_framework.exceptions import ValidationError
 
 def index(request):
     return render(request, 'index.html')
+
 class CategorieViewSet(ModelViewSet):
     queryset = Categorie.objects.all().order_by('-id')
     serializer_class = CategorieSerializer
