@@ -7,18 +7,24 @@ from rest_framework import serializers
 from djoser.serializers import UserCreateSerializer
 from django.contrib.auth import get_user_model
 
-
 User = get_user_model()
-
 
 class AddUserCreateSerializer(UserCreateSerializer):
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)
 
+    def create(self, validated_data):
+        user = super().create(validated_data)
+
+        if User.objects.count() == 1:
+            from .add_data import add_data_function
+            add_data_function()  # Assuming there's a function in add_data module
+
+        return user
+
     class Meta(UserCreateSerializer.Meta):
         model = User
-        fields = ['id', 'username', 'email',
-                  'password', 'first_name', 'last_name']
+        fields = ['id', 'username', 'email', 'password', 'first_name', 'last_name']
 
 class CategorieSerializer(serializers.ModelSerializer):
     class Meta:
