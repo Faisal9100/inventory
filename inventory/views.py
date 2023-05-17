@@ -306,3 +306,12 @@ class SaleItemViewSet(ModelViewSet):
 
     def get_queryset(self):
         return SaleItem.objects.filter(sale_id=self.kwargs['sales_pk']).select_related('sale','stock','product').all().order_by('-id')
+    
+class WarehouseProductModelViewSet(ModelViewSet):
+    serializer_class= StockSerializer
+    http_method_names = ['get']
+    
+    def get_queryset(self):
+        return Stock.objects.filter(warehouse_id=self.kwargs['warehouses_pk']).select_related('account_supplier','warehouse', 'stock_purchase','product').all().order_by('-id')
+
+    
