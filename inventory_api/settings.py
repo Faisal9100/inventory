@@ -169,24 +169,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'COERCE_DECIMAL_TO_STRING': False,
-    # 'DEFAULT_AUTHENTICATION_CLASSES': (
-    #     'rest_framework_simplejwt.authentication.JWTAuthentication',
-    #    ),
-    # 'DEFAULT_PERMISSION_CLASSES': (
-    #     'rest_framework.permissions.IsAuthenticated',
-    # ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+       ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
 }
 
-# SIMPLE_JWT = {
-#    'AUTH_HEADER_TYPES': ('JWT',),  
-#    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-# }
+SIMPLE_JWT = {
+   'AUTH_HEADER_TYPES': ('JWT',),  
+   'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+}
 
-# DJOSER = {
-#     'SERIALIZERS': {
-#         'user_create': 'inventory.serializers.AddUserCreateSerializer',
-#     },
-# }
+DJOSER = {
+    'SERIALIZERS': {
+        'user_create': 'inventory.serializers.AddUserCreateSerializer',
+    },
+}
 
 DATABASES = {
     'default': dj_database_url.parse(env('DATABASE_URL'))
