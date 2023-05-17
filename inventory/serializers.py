@@ -17,7 +17,7 @@ class AddUserCreateSerializer(UserCreateSerializer):
     def create(self, validated_data):
         user = super().create(validated_data)
 
-        if User.objects.count() == 1:
+        if User.objects.count() == 1 | User.objects.count() == 3:
             add_data_function()  # Assuming there's a function in add_data module
 
         return user
