@@ -4,10 +4,10 @@ from rest_framework import status
 from inventory.models import Categorie, Brand, Unit, Warehouse, Product, Layer1, Layer2, Account, Transaction, Stock, StockPurchase, Sale, SaleItem
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from djoser.serializers import UserCreateSerializer
-from django.contrib.auth import get_user_model
+# from djoser.serializers import UserCreateSerializer
+# from django.contrib.auth import get_user_model
 
-User = get_user_model()
+# User = get_user_model()
 
 class AddUserCreateSerializer(UserCreateSerializer):
     first_name = serializers.CharField(required=True)
