@@ -69,6 +69,16 @@ class ProductViewSet(ModelViewSet):
     pagination_class = DefaultPagination
     search_fields = ['name']
     
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        image_path = instance.image.path  # Assuming 'image' is the field name for the image file
+
+        # Delete the image file if it exists
+        if os.path.exists(image_path):
+            os.remove(image_path)
+
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 class Layer1ViewSet(viewsets.ModelViewSet):
     serializer_class = Layer1Serializer
 

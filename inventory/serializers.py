@@ -244,10 +244,15 @@ class SaleSerializer(serializers.ModelSerializer):
 
 
 class SaleItemSerializer(serializers.ModelSerializer):
+    
+    product_name = serializers.SerializerMethodField()
+
+    def get_product_name(self, obj):
+        return obj.product.name
     class Meta:
         model = SaleItem
         fields = ['id', 'sale', 'stock', 'product',
-                  'quantity', 'amount', 'sale_amount']
+                  'quantity', 'amount', 'sale_amount','product_name']
         read_only_fields = ['sale','stock','sale_amount']
         
     # def create(self, validated_data):
