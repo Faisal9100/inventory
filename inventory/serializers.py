@@ -220,14 +220,9 @@ class StockSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Stock
-        fields = ['id', 'account_supplier','stock_purchase', 'warehouse', 'product', 'title',
+        fields = ['id', 'account_supplier','stock_purchase', 'warehouse', 'product',
                   'quantity', 'amount', 'vocuher_type', 'date', 'account_name', 'product_name', 'warehouse_name']
-        read_only_fields = ['stock_purchase']
-        
-    def create(self, validated_data):
-      stock_purchase_id = self.context['stock_purchase_id']
-      validated_data['vocuher_type'] = 'Purchase'
-      return Stock.objects.create(stock_purchase_id=stock_purchase_id, **validated_data)
+        read_only_fields = ['stock_purchase','account_supplier','warehouse','vocuher_type']
 
 
 class SaleSerializer(serializers.ModelSerializer):
@@ -245,7 +240,7 @@ class SaleSerializer(serializers.ModelSerializer):
         model = Sale
         fields = ['id', 'invoice_no', 'account_customer', 'warehouse', 'transaction',
                   'quantity', 'amount', 'remarks', 'date', 'account_name', 'warehouse_name']
-        read_only_fields = ['transaction']
+        read_only_fields = ['transaction','quantity', 'amount']
 
 
 class SaleItemSerializer(serializers.ModelSerializer):
@@ -255,7 +250,7 @@ class SaleItemSerializer(serializers.ModelSerializer):
                   'quantity', 'amount', 'sale_amount']
         read_only_fields = ['sale','stock','sale_amount']
         
-    def create(self, validated_data):
-        sale_id = self.context['sale_id']
-        sale = SaleItem.objects.create(sale_id=sale_id,**validated_data)
-        return sale
+    # def create(self, validated_data):
+    #     sale_id = self.context['sale_id']
+    #     sale = SaleItem.objects.create(sale_id=sale_id,**validated_data)
+    #     return sale
