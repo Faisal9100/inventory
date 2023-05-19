@@ -196,9 +196,9 @@ class StockPurchaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StockPurchase
-        fields = ['id', 'invoice_no', 'account', 'warehouse', 'transaction',
-                  'quantity', 'amount', 'title', 'date', 'account_name', 'warehouse_name']
-        read_only_fields = ['transaction']
+        fields = ['id', 'invoice_no', 'account', 'warehouse', 'transaction','quantity', 'amount',
+                  'title', 'date', 'account_name', 'warehouse_name']
+        read_only_fields = ['transaction','quantity', 'amount']
 
 
 class StockSerializer(serializers.ModelSerializer):
