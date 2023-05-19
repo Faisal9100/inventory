@@ -196,45 +196,49 @@ class StockViewSet(ModelViewSet):
     def destroy(self, request, pk=None, stocks_purchase_pk=None):
         instance = self.get_object()
         
-        stock__data = Stock.objects.filter(id=instance.id).values('stock_purchase','quantity','amount').first()
-        stockpurchase_id = stock__data['stock_purchase']
-        dec_quantity = stock__data['quantity']
-        dec_amount = stock__data['amount']
+        sale_items = SaleItem.objects.filter(stock_id=instance.id)
+        if sale_items.exists():
+            raise ValidationError("Cannot delete stock with child rows in sale item.")
+        else:
+            stock__data = Stock.objects.filter(id=instance.id).values('stock_purchase','quantity','amount').first()
+            stockpurchase_id = stock__data['stock_purchase']
+            dec_quantity = stock__data['quantity']
+            dec_amount = stock__data['amount']
         
-        stock_purchase_data = StockPurchase.objects.filter(id=stockpurchase_id ).values('account','transaction','quantity','amount').first()
-        account_supplier = stock_purchase_data['account']
-        transaction_id = stock_purchase_data['transaction']
-        quantity = stock_purchase_data['quantity']
-        amount = stock_purchase_data['amount']
+            stock_purchase_data = StockPurchase.objects.filter(id=stockpurchase_id ).values('account','transaction','quantity','amount').first()
+            account_supplier = stock_purchase_data['account']
+            transaction_id = stock_purchase_data['transaction']
+            quantity = stock_purchase_data['quantity']
+            amount = stock_purchase_data['amount']
         
-        transaction_credit = Transaction.objects.filter(id=transaction_id).values('credit').first()
-        credit = transaction_credit['credit'] - dec_amount 
-        transaction = Transaction.objects.get(id=transaction_id)
-        transaction.credit = credit
-        transaction.save()
+            transaction_credit = Transaction.objects.filter(id=transaction_id).values('credit').first()
+            credit = transaction_credit['credit'] - dec_amount 
+            transaction = Transaction.objects.get(id=transaction_id)
+            transaction.credit = credit
+            transaction.save()
         
-        total_quantity= quantity - dec_quantity
-        total_amount= amount - dec_amount 
-        stockpurchase= StockPurchase.objects.filter(id=stockpurchase_id).update(amount=total_amount, quantity=total_quantity)
+            total_quantity= quantity - dec_quantity
+            total_amount= amount - dec_amount 
+            stockpurchase= StockPurchase.objects.filter(id=stockpurchase_id).update(amount=total_amount, quantity=total_quantity)
         
-        account_balance = Account.objects.filter(id=account_supplier).values('balance', 'credit').first()
-        credit = account_balance['credit'] - dec_amount 
-        balance = account_balance['balance'] - dec_amount 
-        supplier_account = Account.objects.get(id=account_supplier)
-        supplier_account.credit = credit
-        supplier_account.balance = balance
-        supplier_account.save()
+            account_balance = Account.objects.filter(id=account_supplier).values('balance', 'credit').first()
+            credit = account_balance['credit'] - dec_amount 
+            balance = account_balance['balance'] - dec_amount 
+            supplier_account = Account.objects.get(id=account_supplier)
+            supplier_account.credit = credit
+            supplier_account.balance = balance
+            supplier_account.save()
 
-        accountbalance = Account.objects.filter(id=2).values('balance', 'debit').first()
-        debit_balance = accountbalance['balance'] - dec_amount 
-        debit = accountbalance['debit'] - dec_amount 
-        account = Account.objects.get(id=2)
-        account.debit = debit
-        account.balance = debit_balance
-        account.save()
+            accountbalance = Account.objects.filter(id=2).values('balance', 'debit').first()
+            debit_balance = accountbalance['balance'] - dec_amount 
+            debit = accountbalance['debit'] - dec_amount 
+            account = Account.objects.get(id=2)
+            account.debit = debit
+            account.balance = debit_balance
+            account.save()
         
-        instance.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+            instance.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
     
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
