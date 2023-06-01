@@ -118,11 +118,11 @@ class Layer1Serializer(serializers.ModelSerializer):
 
 class Layer2Serializer(serializers.ModelSerializer):
 
-    def create(self, validated_data):
-        layer1_id = self.context['layer1_id']
-        main_layers = self.context['main_layers']
-        main_layer = main_layers[0]['main_layer'] if main_layers else None
-        return Layer2.objects.create(layer1_id=layer1_id, main_layer=main_layer, **validated_data)
+    # def create(self, validated_data):
+    #     layer1_id = self.context['layer1_id']
+    #     main_layers = self.context['main_layers']
+    #     main_layer = main_layers[0]['main_layer'] if main_layers else None
+    #     return Layer2.objects.create(layer1_id=layer1_id, main_layer=main_layer, **validated_data)
 
     class Meta:
         model = Layer2

@@ -100,6 +100,7 @@ class Layer1ViewSet(viewsets.ModelViewSet):
         return Layer1.objects.filter(main_layer=self.request.GET.get('main_layer')).order_by('-id')      
 
 class Layer2ViewSet(ModelViewSet):
+    queryset = Layer2.objects.all().order_by('-id')
     serializer_class = Layer2Serializer
     
     # def destroy(self, request, *args, **kwargs):
@@ -110,12 +111,12 @@ class Layer2ViewSet(ModelViewSet):
     #         return Response({'error': 'You cannot delete this row.'}, status=status.HTTP_400_BAD_REQUEST)
     #     return Response(status=status.HTTP_204_NO_CONTENT)
     
-    def get_serializer_context(self):
-       main_layers = Layer2.objects.filter(layer1_id=self.kwargs['layer1_pk']).values('main_layer')
-       return {'layer1_id': self.kwargs['layer1_pk'], 'main_layers': main_layers}
+    # def get_serializer_context(self):
+    #    main_layers = Layer2.objects.filter(layer1_id=self.kwargs['layer1_pk']).values('main_layer')
+    #    return {'layer1_id': self.kwargs['layer1_pk'], 'main_layers': main_layers}
 
-    def get_queryset(self):
-        return Layer2.objects.filter(layer1_id=self.kwargs['layer1_pk'])
+    # def get_queryset(self):
+    #     return Layer2.objects.filter(layer1_id=self.kwargs['layer1_pk'])
 
 class CreateAccountViewSet(ModelViewSet):
     queryset= Account.objects.all().order_by('-id')
