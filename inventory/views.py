@@ -82,13 +82,13 @@ class ProductViewSet(ModelViewSet):
 class Layer1ViewSet(viewsets.ModelViewSet):
     serializer_class = Layer1Serializer
 
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if instance.keyword is None:
-            self.perform_destroy(instance)
-        else:
-            return Response({'error': 'You cannot delete this row.'}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    # def destroy(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     if instance.keyword is None:
+    #         self.perform_destroy(instance)
+    #     else:
+    #         return Response({'error': 'You cannot delete this row.'}, status=status.HTTP_400_BAD_REQUEST)
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -102,13 +102,13 @@ class Layer1ViewSet(viewsets.ModelViewSet):
 class Layer2ViewSet(ModelViewSet):
     serializer_class = Layer2Serializer
     
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if instance.keyword is None:
-            self.perform_destroy(instance)
-        else:
-            return Response({'error': 'You cannot delete this row.'}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    # def destroy(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     if instance.keyword is None:
+    #         self.perform_destroy(instance)
+    #     else:
+    #         return Response({'error': 'You cannot delete this row.'}, status=status.HTTP_400_BAD_REQUEST)
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
     
     def get_serializer_context(self):
        main_layers = Layer2.objects.filter(layer1_id=self.kwargs['layer1_pk']).values('main_layer')
@@ -142,13 +142,13 @@ class AccountViewSet(ModelViewSet):
     pagination_class = DefaultPagination
     search_fields = ['title']
     
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        if instance.keyword is None:
-            self.perform_destroy(instance)
-        else:
-            return Response({'error': 'You cannot delete this row.'}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    # def destroy(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     if instance.keyword is None:
+    #         self.perform_destroy(instance)
+    #     else:
+    #         return Response({'error': 'You cannot delete this row.'}, status=status.HTTP_400_BAD_REQUEST)
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
     
 class StockPurchaseViewSet(viewsets.ModelViewSet):
     queryset = StockPurchase.objects.select_related('account','transaction', 'warehouse').all().order_by('-id')
