@@ -1,7 +1,7 @@
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework import status
-from inventory.models import Categorie, Brand, Unit, Warehouse, Product, Layer1, Layer2, Account, Transaction, Stock, StockPurchase, Sale, SaleItem
+from inventory.models import *
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from djoser.serializers import UserCreateSerializer
@@ -17,6 +17,7 @@ class AddUserCreateSerializer(UserCreateSerializer):
         user = super().create(validated_data)
 
         if User.objects.count() == 1:
+            
             from .add_data import add_data_function
             add_data_function()  # Assuming there's a function in add_data module
 
@@ -25,6 +26,7 @@ class AddUserCreateSerializer(UserCreateSerializer):
     class Meta(UserCreateSerializer.Meta):
         model = User
         fields = ['id', 'username', 'email', 'password', 'first_name', 'last_name']
+
 
 class CategorieSerializer(serializers.ModelSerializer):
     class Meta:
@@ -49,12 +51,12 @@ class SupplierSerializer(serializers.ModelSerializer):
         model = Account
         fields = ['id', 'title', 'contact', 'email',
                   'status', 'address', 'balance', 'credit', 'debit']
-        read_only_fields = ['credit', 'debit']
+        read_only_fields = ['balance','credit', 'debit']
 
     def create(self, validated_data):
         validated_data['is_supplier'] = True
-        validated_data['layer1_id'] = 6  # curent liability
-        validated_data['layer2_id'] = 12  # supplier
+        validated_data['layer1_id'] = 3  # curent liability
+        validated_data['layer2_id'] = 8  # supplier
         validated_data['main_layer'] = "liability"
         account = Account.objects.create(**validated_data)
         return account
@@ -71,7 +73,7 @@ class CustomerSerializer(serializers.ModelSerializer):
         model = Account
         fields = ['id', 'title', 'contact', 'email',
                   'status', 'address', 'balance', 'credit', 'debit']
-        read_only_fields = ['credit', 'debit']
+        read_only_fields = ['balance','credit', 'debit']
 
     def create(self, validated_data):
         validated_data['is_customer'] = True
@@ -99,6 +101,7 @@ class ProductSerializer(serializers.ModelSerializer):
     def get_brand_name(self, obj):
         return obj.brand.name
 
+
     class Meta:
         model = Product
         fields = ['id', 'name', 'image',
@@ -118,11 +121,11 @@ class Layer1Serializer(serializers.ModelSerializer):
 
 class Layer2Serializer(serializers.ModelSerializer):
 
-    # def create(self, validated_data):
-    #     layer1_id = self.context['layer1_id']
-    #     main_layers = self.context['main_layers']
-    #     main_layer = main_layers[0]['main_layer'] if main_layers else None
-    #     return Layer2.objects.create(layer1_id=layer1_id, main_layer=main_layer, **validated_data)
+    def create(self, validated_data):
+        layer1_id = self.context['layer1_id']
+        main_layers = self.context['main_layers']
+        main_layer = main_layers[0]['main_layer'] if main_layers else None
+        return Layer2.objects.create(layer1_id=layer1_id, main_layer=main_layer, **validated_data)
 
     class Meta:
         model = Layer2
@@ -143,6 +146,7 @@ class CreateAccountSerializer(serializers.ModelSerializer):
         model = Account
         fields = ['id', 'title', 'contact', 'email',
                   'status', 'balance', 'address']
+        read_only_fields = ['balance']
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -154,15 +158,38 @@ class AccountSerializer(serializers.ModelSerializer):
 
 
 class TransactionSerializer(serializers.ModelSerializer):
+    account_name = serializers.SerializerMethodField()
+
+    def get_account_name(self, obj):
+        return obj.account.title
     class Meta:
         model = Transaction
-        fields = ['description', 'account_id', 'credit', 'transaction_date']
-
+        fields = ['id','vocuher_type', 'account_id','description','credit','debit','transaction_date','transaction_order','account_name']
+        read_only_fields = ['transaction_order']
+        
+class CreateTransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = [
+            'id',
+            'transaction_order',
+            'account',
+            'description',
+            'debit',
+            'credit',
+            'transaction_date',
+            'vocuher_type'
+        ]
+        
+class TransactionOrderSerializer(serializers.ModelSerializer):
+   class Meta:
+        model = TransactionOrder
+        fields = ['id','transaction_date','vocuher_type','created_at','updated_at',]
+        
 
 class StockPurchaseSerializer(serializers.ModelSerializer):
     title = serializers.CharField(source='transaction.description')
     date = serializers.DateField(source='transaction.transaction_date')
-    invoice_no = serializers.IntegerField(source='transaction.invoice_no')
     account_name = serializers.SerializerMethodField()
     warehouse_name = serializers.SerializerMethodField()
 
@@ -172,33 +199,11 @@ class StockPurchaseSerializer(serializers.ModelSerializer):
     def get_warehouse_name(self, obj):
         return obj.warehouse.name
 
-    # def update(self, instance, validated_data):
-    #     # Update transaction instance
-    #     transaction_data = validated_data.pop('transaction', None)
-    #     if transaction_data:
-    #         transaction = instance.transaction
-    #         transaction.invoice_no = transaction_data.get(
-    #             'invoice_no', transaction.invoice_no)
-    #         transaction.description = transaction_data.get(
-    #             'description', transaction.description)
-    #         transaction.credit = validated_data.get(
-    #             'amount', transaction.credit)
-    #         transaction.transaction_date = transaction_data.get(
-    #             'transaction_date', transaction.transaction_date)
-    #         transaction.save()
-
-    #     # Update stock purchase instance
-    #     instance.quantity = validated_data.get('quantity', instance.quantity)
-    #     instance.amount = validated_data.get('amount', instance.amount)
-    #     instance.save()
-
-    #     return instance
-
     class Meta:
         model = StockPurchase
         fields = ['id', 'invoice_no', 'account', 'warehouse', 'transaction','quantity', 'amount',
                   'title', 'date', 'account_name', 'warehouse_name']
-        read_only_fields = ['transaction','quantity', 'amount']
+        read_only_fields = ['invoice_no','transaction','quantity', 'amount']
 
 
 class StockSerializer(serializers.ModelSerializer):
@@ -220,13 +225,12 @@ class StockSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Stock
-        fields = ['id', 'account_supplier','stock_purchase', 'warehouse', 'product',
-                  'quantity', 'amount', 'vocuher_type', 'date', 'account_name', 'product_name', 'warehouse_name']
+        fields = ['id', 'account_supplier','stock_purchase', 'warehouse', 'product', 'price',
+                  'quantity', 'amount', 'date', 'account_name', 'product_name', 'warehouse_name']
         read_only_fields = ['stock_purchase','account_supplier','warehouse','vocuher_type']
 
 
 class SaleSerializer(serializers.ModelSerializer):
-    invoice_no = serializers.IntegerField(source='transaction.invoice_no')
     account_name = serializers.SerializerMethodField()
     warehouse_name = serializers.SerializerMethodField()
 
@@ -238,9 +242,9 @@ class SaleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Sale
-        fields = ['id', 'invoice_no', 'account_customer', 'warehouse', 'transaction',
+        fields = ['id', 'invoice_no', 'account_customer', 'warehouse', 'transaction','sale_amount',
                   'quantity', 'amount', 'remarks', 'date', 'account_name', 'warehouse_name']
-        read_only_fields = ['transaction','quantity', 'amount']
+        read_only_fields = ['invoice_no','transaction','quantity', 'amount','sale_amount']
 
 
 class SaleItemSerializer(serializers.ModelSerializer):
@@ -251,7 +255,7 @@ class SaleItemSerializer(serializers.ModelSerializer):
         return obj.product.name
     class Meta:
         model = SaleItem
-        fields = ['id', 'sale', 'stock', 'product',
+        fields = ['id', 'sale', 'stock', 'product', 'price',
                   'quantity', 'amount', 'sale_amount','product_name']
         read_only_fields = ['sale','stock','sale_amount']
         
